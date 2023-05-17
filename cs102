@@ -1,0 +1,443 @@
+#include <iostream>
+#include <conio.h>
+using namespace std;
+int elevatorRow = 33;
+int elevatorCol = 3;
+int elevatorDirection = -1;
+int elevatorTop = 20;
+int elevatorBottom = 34;
+int elevatorWidth = 6;
+void printCentered(char* text, int textLength, int screenWidth, int screenHeight)
+{
+	int startPosX = (screenWidth - textLength) / 2;
+	int startPosY = screenHeight / 2;
+	for (int i = 0; i < startPosY; i++)
+	{
+		cout << endl;
+	}
+	for (int i = 0; i < startPosX; i++)
+	{
+		cout << ' ';
+	}
+	cout << text << endl;
+}
+
+void mainMenu()
+{
+	char welcomeText[] = "Welcome to the game!";
+	char startText[] = "Press Enter to start";
+	printCentered(welcomeText, 19, 200, 35);
+	printCentered(startText, 19, 200, 35);
+
+	while (true)
+	{
+		char ch = _getch();
+		if (ch == '\r')
+		{
+			break;
+		}
+	}
+}
+void moveElevator(char grid[][140], int heroRow, int heroCol) {
+	
+	for (int i = 0; i < elevatorWidth; i++) {
+		grid[elevatorRow][elevatorCol + i] = ' ';
+	}
+	grid[elevatorRow - 1][elevatorCol] = ' ';
+	grid[elevatorRow - 1][elevatorCol + elevatorWidth - 1] = ' ';
+
+	
+	elevatorRow += elevatorDirection;
+
+	
+	if (elevatorRow == elevatorTop || elevatorRow == elevatorBottom) {
+		elevatorDirection *= -1;
+	}
+
+	
+	if (heroRow == elevatorRow && heroCol >= elevatorCol && heroCol <= elevatorCol + elevatorWidth - 1) {
+		
+		heroRow += elevatorDirection;
+	}
+
+	
+	for (int i = 0; i < elevatorWidth; i++) {
+		grid[elevatorRow][elevatorCol + i] = '-';
+	}
+	grid[elevatorRow - 1][elevatorCol] = '|';
+	grid[elevatorRow - 1][elevatorCol + elevatorWidth - 1] = '|';
+}
+void ersm(char x[][140], int& r, int& c)
+{
+
+	for (int r = 0; r < 35; r++)
+	{
+		for (int c = 0; c < 140; c++)
+		{
+			x[r][c] = ' ';
+		}
+	}
+	int j = 49;
+	for (int c = 0; c < 140; c++)
+	{
+		x[0][c] = '_';
+		x[34][c] = '_';
+	}
+	for (int r = 0; r < 45; r++)
+	{
+		x[r][0] = '|';
+		x[r][139] = '|';
+	}
+	for (int c = 0; c < 140; c++)
+	{
+		x[11][c] = '-';
+	}
+	for (int i = 20; i < 39; i++)
+	{
+		x[11][i] = '^';
+	}
+	x[7][22] = '_';
+	x[7][23] = '_';
+	x[4][25] = '_';
+	x[4][26] = '_';
+	x[1][29] = '_';
+	x[4][32] = '_';
+	x[4][33] = '_';
+	x[7][36] = '_';
+	x[7][37] = '_';
+	int h = 0;
+	int k = 109;
+	// el selm 
+	for (int i = 10; i <= 20; i++) {
+		x[i][100] = '|';
+		x[i - 1][99] = '|';
+		x[i - 1][100] = '_';
+		x[i - 1][101] = '_';
+		x[i - 1][102] = '|';
+	}
+
+	for (int i = 0; i < 140; i++)
+	{
+		if (i < 40)
+		{
+			x[20][i] = '-';
+		}
+		if (i > 70)
+		{
+			x[20][i] = '-';
+		}
+	}
+
+
+	for (int i = 0; i < 140; i++)
+	{
+		if (i < 40)
+		{
+			x[20][i] = '-';
+		}
+		if (i > 70)
+		{
+			x[20][i] = '-';
+		}
+	}
+
+}
+void harak2(int& r, int& c, int& dir)
+{
+	if (c == 40)
+	{
+		dir = 1;
+	}
+	if (c == 69)
+	{
+		dir = -1;
+	}
+	if (dir == 1)
+	{
+		c++;
+	}
+	if (dir == -1)
+	{
+		c--;
+	}
+}
+void harak(char x[][140], int& r, int& c, int& dir)
+{
+	x[r][c] = '~';
+	x[r][c + 1] = '~';
+	x[r][c + 2] = '~';
+	harak2(r, c, dir);
+}
+void dispaly(char x[][140])
+{
+	system("cls");
+	for (int r = 0; r < 35; r++)
+	{
+		for (int c = 0; c < 140; c++)
+		{
+			cout << x[r][c];
+		}
+		cout << endl;
+	}
+}
+void ersmhero(char x[][140], int& rEnmy, int& cEnmy)
+{
+	x[rEnmy][cEnmy] = 1;
+	x[rEnmy + 1][cEnmy] = '|';
+	x[rEnmy + 1][cEnmy - 1] = '/';
+	x[rEnmy + 1][cEnmy + 1] = '\\';
+	x[rEnmy + 1][cEnmy + 1] = '\\';
+	x[rEnmy + 2][cEnmy] = '|';
+	x[rEnmy + 3][cEnmy - 1] = '/';
+	x[rEnmy + 3][cEnmy + 1] = '\\';
+	if (cEnmy > 37)
+	{
+		x[rEnmy + 1][cEnmy + 2] = '/';
+	}
+}
+void ersmenemy(char x[][140], int& renemy, int& cenemy)
+{
+	x[renemy][cenemy + 1] = '-';
+	x[renemy][cenemy + 2] = '-';
+	x[renemy + 1][cenemy] = '|';
+	x[renemy + 2][cenemy] = '|';
+	x[renemy + 3][cenemy + 1] = '-';
+	x[renemy + 3][cenemy + 2] = '-';
+	x[renemy + 1][cenemy + 3] = '|';
+	x[renemy + 2][cenemy + 3] = '|';
+	x[renemy + 2][cenemy + 2] = 3;
+	x[renemy + 2][cenemy + 1] = 3;
+	x[renemy + 1][cenemy + 2] = 3;
+	x[renemy + 1][cenemy + 1] = 3;
+	x[renemy + 4][cenemy + 2] = '|';
+	x[renemy + 5][cenemy + 2] = '|';
+	x[renemy + 4][cenemy + 1] = '/';
+	x[renemy + 4][cenemy] = 170;
+	x[renemy + 4][cenemy + 3] = '\\';
+	x[renemy + 6][cenemy + 1] = '/';
+	x[renemy + 6][cenemy + +3] = '\\';
+
+}
+void row(int& rHero, char x[][140])
+{
+	rHero--;
+}
+void gravity(char x[][115], int& rHero, int& cHero)
+{
+	if (x[rHero][cHero + 1] != '-' && x[rHero][cHero - 1] == ' ')
+	{
+		rHero++;
+	}
+}
+void edrb(char x[][140], int& rtalqa, int& ctalqa)
+{
+	int k = ctalqa;
+	ctalqa++;
+	if (ctalqa > 50)
+	{
+		x[rtalqa][ctalqa] = ' ';
+	}
+}
+void rsmtalqa(char x[][140], int& rHero, int& cHero, int& rtalqa, int& ctalqa)
+{
+	int k = ctalqa;
+	if (cHero > 28)
+	{
+		x[rtalqa][ctalqa] = '>';
+
+	}
+	edrb(x, rtalqa, ctalqa);
+}
+void colum(int& c)
+{
+	c += 3;
+}
+void died(int& rHero, int& cHero, int r, int c, int& f)
+{
+	if (rHero + 3 == r && cHero + 3 == c)
+	{
+		f = 1;
+	}
+}
+void hadarbnar(char x[][140], int& Rmakanmosads, int& Cmakanmosads, int& rHero, int& cHero, int& f)
+{
+	if (cHero > 28)
+	{
+		x[Rmakanmosads][Cmakanmosads] = '<';
+		Cmakanmosads--;
+	}
+	if (Cmakanmosads < 28)
+	{
+		Cmakanmosads = 69;
+	}
+	if (rHero + 1 == Rmakanmosads && cHero == Cmakanmosads)
+	{
+
+		x[rHero][cHero] = ' ';
+		x[rHero + 3][cHero + 3] = 1;
+		f = 1;
+	}
+
+
+}
+void checkmothero(int& rHero, int& cHero, int& Rmakanmosadas, int& Cmakanmosadas, int& f)
+{
+	if (rHero == Rmakanmosadas && cHero == Cmakanmosadas)
+	{
+		f = 1;
+	}
+}
+void drabthero(char x[][140], int& rHero, int& cHero, int& renemy, int& cenemy, int& lives)
+{
+	if (rHero + 1 == renemy && cHero + 2 == cenemy)
+	{
+		x[renemy + 2][cenemy + 2] = ' ';
+		lives--;
+	}
+	if (rHero + 1 == renemy && cHero + 2 == cenemy + 1)
+	{
+		x[renemy + 1][cenemy + 2] = ' ';
+	}
+	if (rHero + 1 == renemy + 1 && cHero + 2 == renemy - 1)
+	{
+
+	}
+
+}
+void jump(char x[][140], int& rHero, int& cHero, int& r, int& c, int& Rmakanmosadas, int& Cmakanmosadas, int& renemy, int& cenemy, int& f)
+{
+	if (x[rHero + 3][cHero] != '-')
+	{
+		rHero--;
+		cHero++;
+		ersmhero(x, rHero, cHero);
+		ersmenemy(x, renemy, cenemy);
+		hadarbnar(x, Rmakanmosadas, Cmakanmosadas, rHero, cHero, f);
+		dispaly(x);
+		ersm(x, r, c);
+
+	}
+}
+void harakhero(char x[][140], int& rHero, int& cHero, char mv, int& renemy, int& cenemy, int& Rmakanmosadas, int& Cmakanmosadas, int& rtalqa, int& ctalqa,
+	int& r, int& c, int f)
+{
+	if (mv == 'w')
+	{
+		rHero--;
+	}
+	//harak hero 3ala el selm
+	if (cHero >= 99 && cHero <= 102 && rHero >= 9 && rHero <= 20)
+	{
+		rHero++;
+		cHero++;
+	}
+	
+	if (mv == 'a')
+	{
+		cHero--;
+	}
+	if (mv == 'd')
+	{
+		cHero++;
+	}
+	if (mv == 'j')
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			if (x[rHero + 3][cHero] != '-')
+				jump(x, rHero, cHero, r, c, Rmakanmosadas, Cmakanmosadas, renemy, cenemy, f);
+		}
+		while (x[rHero + 4][cHero] == ' ')
+		{
+			rHero++;
+		}
+	}
+
+	if (mv == 'w')
+	{
+		int jj = 0;
+		while (jj < 5)
+		{
+			rHero--;
+			ersmhero(x, rHero, cHero);
+			ersmenemy(x, renemy, cenemy);
+			hadarbnar(x, Rmakanmosadas, Cmakanmosadas, rHero, cHero, f);
+			dispaly(x);
+			ersm(x, r, c);
+			jj++;
+		}
+
+	}
+
+	if (mv == 'w')
+	{
+		int jj = 6;
+		while (jj > 0)
+		{
+			rHero++;
+			ersmhero(x, rHero, cHero);
+			ersmenemy(x, renemy, cenemy);
+			hadarbnar(x, Rmakanmosadas, Cmakanmosadas, rHero, cHero, f);
+			dispaly(x);
+			ersm(x, r, c);
+			jj--;
+		}
+
+	}
+
+}
+void main()
+{
+	mainMenu();
+	char x[35][140];
+	int rHero = 7, cHero = 3, f = 0, renemy = 4, cenemy = 70, Rmakanmosads = 8, Cmakanmosads = 69, lives = 4, rtalqa = 7, ctalqa = 6, c = 40, r = 20, dir = 1;
+	for (; ;)
+	{
+
+		for (; !_kbhit(); )
+		{
+			ersm(x, r, c);
+			harak(x, r, c, dir);
+			moveElevator(x, rHero, cHero);
+			ersmhero(x, rHero, cHero);
+			ersmenemy(x, renemy, cenemy);
+			hadarbnar(x, Rmakanmosads, Cmakanmosads, rHero, cHero, f);
+			dispaly(x);
+			checkmothero(rHero, cHero, Rmakanmosads, Cmakanmosads, f);
+			if (x[rHero + 4][cHero] == ' ') 
+			{
+				rHero++;
+				if (rHero > 34) 
+				{
+					cout << "game over" << endl;
+					return;
+				}
+			}
+			if (f == 1)
+			{
+				break;
+			}
+		}
+
+		char ch = _getch();
+		harakhero(x, rHero, cHero, ch, renemy, cenemy, Rmakanmosads, Cmakanmosads, rtalqa, ctalqa, r, c, f);
+		if (ch == 'z')
+		{
+			rsmtalqa(x, rHero, cHero, rtalqa, ctalqa);
+		}
+		ersmhero(x, rHero, cHero);
+
+
+		for (int i = 20; i < 39; i++)
+		{
+			died(rHero, cHero, 11, i, f);
+		}
+		if (f == 1)
+		{
+			cout << "game over";
+			break;
+		}
+
+	}
+
+}
